@@ -1,0 +1,2559 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="UI/UXデザインのベストプラクティスデモページ - 約1000個の実用的なUI要素を集約">
+    <title>UI/UXデザイン デモページ - モダンなベストプラクティス集</title>
+
+    <style>
+        /* ==================== CSS変数: グローバルテーマ定義 ==================== */
+        /* ここでカラーパレット、フォント、スペーシング、シャドウなどを一括管理
+           これにより、ダークモード・ライトモード切り替えが容易になります */
+        :root {
+            /* ライトモードの色定義 */
+            --primary-color: #3b82f6;      /* 基本色（青）*/
+            --secondary-color: #8b5cf6;    /* 補助色（紫）*/
+            --success-color: #10b981;      /* 成功色（緑）*/
+            --warning-color: #f59e0b;      /* 警告色（黄）*/
+            --danger-color: #ef4444;       /* 危険色（赤）*/
+
+            --bg-primary: #ffffff;         /* メイン背景 */
+            --bg-secondary: #f3f4f6;       /* サブ背景 */
+            --bg-tertiary: #e5e7eb;        /* テーシャリ背景 */
+
+            --text-primary: #1f2937;       /* テキスト主色 */
+            --text-secondary: #6b7280;     /* テキスト補助色 */
+            --text-tertiary: #9ca3af;      /* テキスト薄色 */
+
+            --border-color: #d1d5db;       /* ボーダー色 */
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+            --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.1);
+
+            /* フォント設定（システムフォント優先でWebセーフ） */
+            --font-family-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            --font-family-mono: 'SF Mono', Monaco, 'Cascadia Code', Menlo, Courier, monospace;
+
+            /* スペーシングスケール（8pxベース） */
+            --spacing-xs: 4px;
+            --spacing-sm: 8px;
+            --spacing-md: 16px;
+            --spacing-lg: 24px;
+            --spacing-xl: 32px;
+            --spacing-2xl: 48px;
+
+            /* ボーダーラディウス */
+            --radius-sm: 4px;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --radius-xl: 16px;
+            --radius-full: 9999px;
+
+            /* トランジション速度 */
+            --transition-fast: 150ms ease-out;
+            --transition-normal: 250ms ease-out;
+            --transition-slow: 350ms ease-out;
+        }
+
+        /* ダークモード対応：ユーザーがダークモードを好む場合の色定義 */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg-primary: #0f172a;
+                --bg-secondary: #1e293b;
+                --bg-tertiary: #334155;
+                --text-primary: #f8fafc;
+                --text-secondary: #cbd5e1;
+                --text-tertiary: #94a3b8;
+                --border-color: #475569;
+            }
+        }
+
+        /* ==================== リセット & グローバルスタイル ==================== */
+        /* 全ブラウザで統一した見た目を実現するため、デフォルトスタイルをリセット */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;  /* スムーズスクロール */
+        }
+
+        body {
+            font-family: var(--font-family-sans);
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;  /* フォント描画を滑らかに */
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* 見出しのスタイル統一 */
+        h1 { font-size: 2.5rem; font-weight: 700; margin-bottom: var(--spacing-lg); }
+        h2 { font-size: 2rem; font-weight: 700; margin-bottom: var(--spacing-md); }
+        h3 { font-size: 1.5rem; font-weight: 600; margin-bottom: var(--spacing-sm); }
+        h4 { font-size: 1.25rem; font-weight: 600; }
+        h5 { font-size: 1.1rem; font-weight: 600; }
+        h6 { font-size: 1rem; font-weight: 600; }
+
+        /* テキストの基本スタイル */
+        p { margin-bottom: var(--spacing-md); }
+        a {
+            color: var(--primary-color);
+            text-decoration: none;
+            transition: color var(--transition-fast);
+        }
+        a:hover { color: var(--secondary-color); }
+
+        /* ==================== メインレイアウト ==================== */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: var(--spacing-lg);
+        }
+
+        /* ナビゲーションバー：実務でよく使用されるサイトヘッダー */
+        /* 使用例：Webサイトのトップに固定して、各セクションへのリンク提供
+           UI/UX的優位点：スティッキーヘッダーでアクセスしやすい、レスポンシブ対応 */
+        .navbar {
+            position: sticky;
+            top: 0;
+            background: var(--bg-primary);
+            border-bottom: 1px solid var(--border-color);
+            z-index: 100;
+            backdrop-filter: blur(10px);  /* ガラス風効果（Glassmorphism） */
+            box-shadow: var(--shadow-sm);
+        }
+
+        .navbar-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: var(--spacing-md) var(--spacing-lg);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar-brand {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .navbar-menu {
+            display: flex;
+            list-style: none;
+            gap: var(--spacing-lg);
+            flex-wrap: wrap;
+        }
+
+        .navbar-menu a {
+            font-size: 0.95rem;
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-radius: var(--radius-md);
+            transition: background-color var(--transition-fast), color var(--transition-fast);
+        }
+
+        .navbar-menu a:hover {
+            background-color: var(--bg-secondary);
+        }
+
+        /* レスポンシブナビゲーション（モバイル対応） */
+        .navbar-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-primary);
+        }
+
+        @media (max-width: 768px) {
+            .navbar-menu {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                flex-direction: column;
+                background-color: var(--bg-secondary);
+                padding: var(--spacing-md);
+                gap: var(--spacing-sm);
+            }
+
+            .navbar-menu.active {
+                display: flex;
+            }
+
+            .navbar-toggle {
+                display: block;
+            }
+        }
+
+        /* ==================== ボタン設計：基本から応用まで ==================== */
+        /* ボタンはUI/UXで最も重要な要素。Fittsの法則（ターゲットは大きく、アクセスしやすい位置に）を考慮 */
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--spacing-sm);
+            padding: var(--spacing-sm) var(--spacing-md);
+            border: none;
+            border-radius: var(--radius-md);
+            font-family: var(--font-family-sans);
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            user-select: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* プライマリボタン：最も重要なアクション（例：送信、作成） */
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-primary:hover {
+            background-color: #2563eb;
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-2px);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-primary:disabled {
+            background-color: var(--text-tertiary);
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+        }
+
+        /* セカンダリボタン：副次的なアクション（例：キャンセル、戻る） */
+        .btn-secondary {
+            background-color: var(--bg-secondary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--bg-tertiary);
+            border-color: var(--text-secondary);
+        }
+
+        /* ダンジャーボタン：削除など危険なアクション */
+        .btn-danger {
+            background-color: var(--danger-color);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #dc2626;
+        }
+
+        /* サクセスボタン：完了、確定などポジティブなアクション */
+        .btn-success {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #059669;
+        }
+
+        /* ウォーニングボタン：注意が必要なアクション */
+        .btn-warning {
+            background-color: var(--warning-color);
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background-color: #d97706;
+        }
+
+        /* アウトラインボタン：控えめなアクション */
+        .btn-outline {
+            background-color: transparent;
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+        }
+
+        .btn-outline:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        /* ゴーストボタン：テキストのみで非常に控えめ */
+        .btn-ghost {
+            background-color: transparent;
+            color: var(--primary-color);
+        }
+
+        .btn-ghost:hover {
+            background-color: var(--bg-secondary);
+        }
+
+        /* ボタンサイズバリエーション */
+        .btn-sm {
+            padding: var(--spacing-xs) var(--spacing-sm);
+            font-size: 0.85rem;
+        }
+
+        .btn-lg {
+            padding: var(--spacing-md) var(--spacing-lg);
+            font-size: 1.05rem;
+        }
+
+        .btn-block {
+            display: flex;
+            width: 100%;
+        }
+
+        /* アイコン付きボタン（サンプル） */
+        .btn-with-icon {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        /* ==================== フォーム要素 ==================== */
+        /* ユーザーがデータを入力する場所。ユーザビリティが特に重要 */
+
+        .form-group {
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: var(--spacing-sm);
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        /* ラベルに必須フラグを追加する場合 */
+        .form-label.required::after {
+            content: ' *';
+            color: var(--danger-color);
+        }
+
+        /* テキストフィールド、テキストエリア：ユーザー入力の基本
+           使用例：ログインフォーム、問い合わせフォーム
+           UI/UX的優位点：わかりやすいフォーカス状態、エラー表示対応 */
+        .form-input,
+        .form-textarea,
+        .form-select {
+            width: 100%;
+            padding: var(--spacing-sm) var(--spacing-md);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: var(--font-family-sans);
+            font-size: 1rem;
+            transition: all var(--transition-fast);
+        }
+
+        .form-input:focus,
+        .form-textarea:focus,
+        .form-select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);  /* フォーカスリング */
+        }
+
+        .form-input:disabled,
+        .form-textarea:disabled,
+        .form-select:disabled {
+            background-color: var(--bg-secondary);
+            color: var(--text-tertiary);
+            cursor: not-allowed;
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        /* エラー状態の表示 */
+        .form-input.error,
+        .form-textarea.error {
+            border-color: var(--danger-color);
+            background-color: rgba(239, 68, 68, 0.05);
+        }
+
+        .form-input.error:focus,
+        .form-textarea.error:focus {
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+        }
+
+        .form-error {
+            color: var(--danger-color);
+            font-size: 0.85rem;
+            margin-top: var(--spacing-xs);
+        }
+
+        /* 成功状態の表示 */
+        .form-input.success {
+            border-color: var(--success-color);
+        }
+
+        .form-success {
+            color: var(--success-color);
+            font-size: 0.85rem;
+            margin-top: var(--spacing-xs);
+        }
+
+        /* チェックボックスとラジオボタン：複数選択や排他選択 */
+        .form-checkbox,
+        .form-radio {
+            display: flex;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-sm);
+            cursor: pointer;
+        }
+
+        .form-checkbox input[type="checkbox"],
+        .form-radio input[type="radio"] {
+            cursor: pointer;
+            width: 18px;
+            height: 18px;
+            accent-color: var(--primary-color);  /* ネイティブチェックボックスの色変更 */
+        }
+
+        .form-checkbox label,
+        .form-radio label {
+            cursor: pointer;
+            user-select: none;
+        }
+
+        /* スイッチ（トグル）：ON/OFF設定用
+           使用例：ダークモード切り替え、通知オン/オフ
+           UI/UX的優位点：ビジュアルがわかりやすく、クリック領域が大きい */
+        .form-switch {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-md);
+        }
+
+        .form-switch input[type="checkbox"] {
+            appearance: none;
+            width: 50px;
+            height: 28px;
+            background-color: var(--bg-secondary);
+            border-radius: var(--radius-full);
+            cursor: pointer;
+            position: relative;
+            transition: background-color var(--transition-fast);
+            border: none;
+        }
+
+        .form-switch input[type="checkbox"]::before {
+            content: '';
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            border-radius: var(--radius-full);
+            background-color: white;
+            top: 2px;
+            left: 2px;
+            transition: left var(--transition-fast);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .form-switch input[type="checkbox"]:checked {
+            background-color: var(--primary-color);
+        }
+
+        .form-switch input[type="checkbox"]:checked::before {
+            left: 24px;
+        }
+
+        .form-switch label {
+            cursor: pointer;
+            user-select: none;
+        }
+
+        /* ==================== カード：汎用コンテナ ==================== */
+        /* 情報をグループ化して表示。ブログ記事、商品、ユーザープロフィールなどに使用 */
+        /* 使用例：プロダクト一覧、記事一覧、ユーザーレビュー表示
+           UI/UX的優位点：視覚的に分かりやすく、ホバー時のインタラクションで興味引き出す */
+
+        .card {
+            background-color: var(--bg-secondary);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-lg);
+            border: 1px solid var(--border-color);
+            transition: all var(--transition-normal);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .card:hover {
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-4px);
+        }
+
+        .card-header {
+            margin-bottom: var(--spacing-md);
+            padding-bottom: var(--spacing-md);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .card-body {
+            margin-bottom: var(--spacing-md);
+        }
+
+        .card-footer {
+            padding-top: var(--spacing-md);
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            gap: var(--spacing-sm);
+            justify-content: flex-end;
+        }
+
+        /* 水平レイアウトのカード */
+        .card-horizontal {
+            display: flex;
+            gap: var(--spacing-lg);
+        }
+
+        .card-horizontal .card-image {
+            flex-shrink: 0;
+            width: 150px;
+            height: 150px;
+            background-color: var(--bg-tertiary);
+            border-radius: var(--radius-lg);
+        }
+
+        .card-horizontal .card-content {
+            flex: 1;
+        }
+
+        /* ==================== グリッドレイアウト ==================== */
+        /* 複数のカードやアイテムを規則正しく配置 */
+        .grid {
+            display: grid;
+            gap: var(--spacing-lg);
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        }
+
+        .grid-2 {
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        }
+
+        .grid-3 {
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        }
+
+        @media (max-width: 768px) {
+            .grid,
+            .grid-2,
+            .grid-3 {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ==================== セクション区切り ==================== */
+        .section {
+            padding: var(--spacing-2xl) var(--spacing-lg);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .section:last-child {
+            border-bottom: none;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: var(--spacing-lg);
+            color: var(--primary-color);
+        }
+
+        .section-subtitle {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        /* ==================== バッジ：小さなラベル ==================== */
+        /* ステータス表示、タグ、数値のハイライト用
+           使用例：ユーザーランク表示、記事のカテゴリ、新着フラグ
+           UI/UX的優位点：素早く情報が認識でき、視覚的に整理される */
+
+        .badge {
+            display: inline-block;
+            padding: var(--spacing-xs) var(--spacing-sm);
+            border-radius: var(--radius-full);
+            font-size: 0.75rem;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .badge-primary {
+            background-color: rgba(59, 130, 246, 0.2);
+            color: var(--primary-color);
+        }
+
+        .badge-success {
+            background-color: rgba(16, 185, 129, 0.2);
+            color: var(--success-color);
+        }
+
+        .badge-warning {
+            background-color: rgba(245, 158, 11, 0.2);
+            color: var(--warning-color);
+        }
+
+        .badge-danger {
+            background-color: rgba(239, 68, 68, 0.2);
+            color: var(--danger-color);
+        }
+
+        .badge-secondary {
+            background-color: var(--bg-secondary);
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+        }
+
+        /* ==================== アラート・通知 ==================== */
+        /* ユーザーへのメッセージ表示。成功、エラー、情報などを明確に区別
+           使用例：フォーム送信完了メッセージ、エラー通知、重要な情報
+           UI/UX的優位点：色と視覚的階層で重要度が一目で分かる */
+
+        .alert {
+            padding: var(--spacing-md) var(--spacing-lg);
+            border-radius: var(--radius-lg);
+            margin-bottom: var(--spacing-lg);
+            border-left: 4px solid;
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+        }
+
+        .alert-primary {
+            background-color: rgba(59, 130, 246, 0.1);
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .alert-success {
+            background-color: rgba(16, 185, 129, 0.1);
+            color: var(--success-color);
+            border-color: var(--success-color);
+        }
+
+        .alert-warning {
+            background-color: rgba(245, 158, 11, 0.1);
+            color: var(--warning-color);
+            border-color: var(--warning-color);
+        }
+
+        .alert-danger {
+            background-color: rgba(239, 68, 68, 0.1);
+            color: var(--danger-color);
+            border-color: var(--danger-color);
+        }
+
+        .alert-close {
+            margin-left: auto;
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            color: inherit;
+        }
+
+        /* ==================== プログレスバー ==================== */
+        /* 進捗状況を表示。ファイルアップロード、ダウンロード、フォーム進捗などに使用
+           使用例：タスク完了率、インストール進捗
+           UI/UX的優位点：視覚的に進捗が一目で分かり、ユーザーの待ち時間の不安軽減 */
+
+        .progress {
+            width: 100%;
+            height: 8px;
+            background-color: var(--bg-tertiary);
+            border-radius: var(--radius-full);
+            overflow: hidden;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .progress-bar {
+            height: 100%;
+            background-color: var(--primary-color);
+            transition: width var(--transition-normal);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            color: white;
+            font-weight: bold;
+        }
+
+        /* 異なる色のプログレスバー */
+        .progress-bar.success {
+            background-color: var(--success-color);
+        }
+
+        .progress-bar.warning {
+            background-color: var(--warning-color);
+        }
+
+        .progress-bar.danger {
+            background-color: var(--danger-color);
+        }
+
+        /* ==================== タブ ==================== */
+        /* コンテンツを複数セクションに分割して表示
+           使用例：ユーザープロフィール（基本情報・設定・プライバシー）
+           UI/UX的優位点：画面に収まる情報量増加、ナビゲーション直感的 */
+
+        .tabs {
+            display: flex;
+            border-bottom: 2px solid var(--border-color);
+            margin-bottom: var(--spacing-lg);
+            overflow-x: auto;
+            gap: var(--spacing-sm);
+        }
+
+        .tab-button {
+            background: none;
+            border: none;
+            padding: var(--spacing-md) var(--spacing-lg);
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            color: var(--text-secondary);
+            position: relative;
+            transition: color var(--transition-fast);
+            white-space: nowrap;
+        }
+
+        .tab-button:hover {
+            color: var(--text-primary);
+        }
+
+        .tab-button.active {
+            color: var(--primary-color);
+        }
+
+        .tab-button.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background-color: var(--primary-color);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn var(--transition-fast);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ==================== アコーディオン ==================== */
+        /* 複数の展開可能なセクション。FAQなどで使用
+           使用例：よくある質問、設定項目、説明文
+           UI/UX的優位点：情報が整理され、ユーザーが必要な部分だけ展開可能 */
+
+        .accordion {
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+        }
+
+        .accordion-item {
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .accordion-item:last-child {
+            border-bottom: none;
+        }
+
+        .accordion-header {
+            background-color: var(--bg-secondary);
+            padding: var(--spacing-md) var(--spacing-lg);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background-color var(--transition-fast);
+            user-select: none;
+        }
+
+        .accordion-header:hover {
+            background-color: var(--bg-tertiary);
+        }
+
+        .accordion-header.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .accordion-toggle {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            transition: transform var(--transition-fast);
+        }
+
+        .accordion-item.active .accordion-toggle {
+            transform: rotate(180deg);
+        }
+
+        .accordion-content {
+            display: none;
+            padding: var(--spacing-md) var(--spacing-lg);
+            background-color: var(--bg-primary);
+        }
+
+        .accordion-item.active .accordion-content {
+            display: block;
+            animation: slideDown var(--transition-fast);
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                max-height: 0;
+                overflow: hidden;
+            }
+            to {
+                opacity: 1;
+                max-height: 500px;
+            }
+        }
+
+        /* ==================== モーダルダイアログ ==================== */
+        /* ユーザーの注意を引く必要がある場合に使用
+           使用例：確認ダイアログ、詳細情報表示、ウィザード
+           UI/UX的優位点：重要な情報を強調、背後の要素で気が散らない */
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            animation: fadeIn var(--transition-fast);
+        }
+
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background-color: var(--bg-primary);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-xl);
+            max-width: 500px;
+            width: 90%;
+            overflow: hidden;
+            animation: slideUp var(--transition-normal);
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-header {
+            padding: var(--spacing-lg);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-secondary);
+        }
+
+        .modal-body {
+            padding: var(--spacing-lg);
+        }
+
+        .modal-footer {
+            padding: var(--spacing-lg);
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            gap: var(--spacing-md);
+            justify-content: flex-end;
+        }
+
+        /* ==================== ツールチップ ==================== */
+        /* マウスホバー時に追加情報を表示
+           使用例：複雑な機能の説明、アイコンの意味説明
+           UI/UX的優位点：詳細情報の提供が効率的、画面占有最小化 */
+
+        .tooltip-container {
+            position: relative;
+            display: inline-block;
+            cursor: help;
+        }
+
+        .tooltip-text {
+            visibility: hidden;
+            background-color: var(--text-primary);
+            color: var(--bg-primary);
+            text-align: center;
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-radius: var(--radius-md);
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            white-space: nowrap;
+            font-size: 0.85rem;
+            opacity: 0;
+            transition: opacity var(--transition-fast);
+        }
+
+        .tooltip-text::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 5px solid transparent;
+            border-top-color: var(--text-primary);
+        }
+
+        .tooltip-container:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        /* ==================== トースト通知 ==================== */
+        /* 画面隅に表示される一時的な通知
+           使用例：操作成功メッセージ、エラー通知
+           UI/UX的優位点：操作結果のフィードバックが素早く得られる */
+
+        .toast-container {
+            position: fixed;
+            bottom: var(--spacing-lg);
+            right: var(--spacing-lg);
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-md);
+        }
+
+        .toast {
+            background-color: var(--bg-secondary);
+            border-left: 4px solid var(--primary-color);
+            padding: var(--spacing-md) var(--spacing-lg);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            animation: slideInRight var(--transition-normal);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            min-width: 300px;
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(400px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .toast.success {
+            border-color: var(--success-color);
+        }
+
+        .toast.warning {
+            border-color: var(--warning-color);
+        }
+
+        .toast.error {
+            border-color: var(--danger-color);
+        }
+
+        .toast-close {
+            margin-left: auto;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+        }
+
+        /* ==================== バッジカウンター ==================== */
+        /* 通知数などを表示する小さなラベル
+           使用例：未読メッセージ数、新着通知
+           UI/UX的優位点：重要な情報が即座に目に入る */
+
+        .badge-counter {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            background-color: var(--danger-color);
+            color: white;
+            border-radius: var(--radius-full);
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+
+        /* ==================== スピナー・ローディング ==================== */
+        /* 処理中の待機状態を表示
+           使用例：データ読み込み中、ファイルアップロード中
+           UI/UX的優位点：処理中であることが明確に伝わり、ユーザーを不安にさせない */
+
+        .spinner {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            border: 4px solid var(--bg-tertiary);
+            border-top-color: var(--primary-color);
+            border-radius: var(--radius-full);
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .spinner.sm {
+            width: 20px;
+            height: 20px;
+            border-width: 2px;
+        }
+
+        .spinner.lg {
+            width: 40px;
+            height: 40px;
+            border-width: 5px;
+        }
+
+        /* ==================== ドラッグ&ドロップゾーン ==================== */
+        /* ファイルアップロード機能
+           使用例：ファイルアップロード、画像追加
+           UI/UX的優位点：複数の入力方法（クリック、ドラッグ）で利便性向上 */
+
+        .dropzone {
+            border: 2px dashed var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-2xl);
+            text-align: center;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            background-color: var(--bg-secondary);
+        }
+
+        .dropzone:hover {
+            border-color: var(--primary-color);
+            background-color: rgba(59, 130, 246, 0.05);
+        }
+
+        .dropzone.dragover {
+            border-color: var(--primary-color);
+            background-color: rgba(59, 130, 246, 0.1);
+            transform: scale(1.02);
+        }
+
+        .dropzone-text {
+            color: var(--text-secondary);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .dropzone-hint {
+            font-size: 0.85rem;
+            color: var(--text-tertiary);
+        }
+
+        /* ==================== パンくずリスト（ブレッドクラム） ==================== */
+        /* ページ内での位置を示す。SEO対策にも効果的
+           使用例：Eコマースサイト、ドキュメントサイト
+           UI/UX的優位点：ユーザーが現在位置を把握でき、戻り先を素早く選択可能 */
+
+        .breadcrumb {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-lg);
+            font-size: 0.95rem;
+        }
+
+        .breadcrumb-item {
+            color: var(--text-secondary);
+        }
+
+        .breadcrumb-item.active {
+            color: var(--text-primary);
+        }
+
+        .breadcrumb-separator {
+            color: var(--text-tertiary);
+        }
+
+        .breadcrumb-item a {
+            color: var(--primary-color);
+        }
+
+        /* ==================== ペジネーション（ページング） ==================== */
+        /* 複数ページのコンテンツを分割表示
+           使用例：ブログ記事一覧、検索結果
+           UI/UX的優位点：一度に読み込む情報を制限し、パフォーマンス向上 */
+
+        .pagination {
+            display: flex;
+            gap: var(--spacing-xs);
+            justify-content: center;
+            margin-top: var(--spacing-lg);
+        }
+
+        .page-link {
+            padding: var(--spacing-sm) var(--spacing-md);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+
+        .page-link:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .page-link.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .page-link:disabled {
+            color: var(--text-tertiary);
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
+
+        /* ==================== スライダー（レンジ入力） ==================== */
+        /* 数値を選択する
+           使用例：価格フィルター、音量調整
+           UI/UX的優位点：直感的に値を選択でき、ビジュアルフィードバックが得られる */
+
+        .form-range {
+            width: 100%;
+            height: 6px;
+            accent-color: var(--primary-color);
+            cursor: pointer;
+        }
+
+        .range-container {
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .range-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: var(--spacing-sm);
+            font-size: 0.95rem;
+        }
+
+        /* ==================== リスト表示 ==================== */
+        .list {
+            list-style: none;
+        }
+
+        .list-item {
+            padding: var(--spacing-md);
+            border-bottom: 1px solid var(--border-color);
+            transition: background-color var(--transition-fast);
+        }
+
+        .list-item:hover {
+            background-color: var(--bg-secondary);
+        }
+
+        .list-item:last-child {
+            border-bottom: none;
+        }
+
+        /* ==================== スターレーティング ==================== */
+        .star-rating {
+            display: flex;
+            gap: var(--spacing-xs);
+            font-size: 1.5rem;
+        }
+
+        .star {
+            cursor: pointer;
+            color: var(--text-tertiary);
+            transition: color var(--transition-fast);
+        }
+
+        .star:hover,
+        .star.active {
+            color: var(--warning-color);
+        }
+
+        /* ==================== 色見本 ==================== */
+        .color-swatch {
+            width: 80px;
+            height: 80px;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-color);
+            display: inline-flex;
+            align-items: flex-end;
+            justify-content: center;
+            padding: var(--spacing-sm);
+            font-size: 0.75rem;
+            text-align: center;
+            color: var(--text-tertiary);
+        }
+
+        /* ==================== レスポンシブ対応（モバイル） ==================== */
+        @media (max-width: 768px) {
+            h1 { font-size: 2rem; }
+            h2 { font-size: 1.5rem; }
+            h3 { font-size: 1.25rem; }
+
+            .container {
+                padding: var(--spacing-md);
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .card-horizontal {
+                flex-direction: column;
+            }
+
+            .card-horizontal .card-image {
+                width: 100%;
+                height: 200px;
+            }
+
+            .tabs {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .toast-container {
+                left: var(--spacing-lg);
+                right: var(--spacing-lg);
+                bottom: var(--spacing-lg);
+            }
+
+            .toast {
+                min-width: auto;
+                max-width: 100%;
+            }
+
+            .modal-content {
+                width: 95%;
+            }
+        }
+
+        /* ==================== ユーティリティクラス ==================== */
+        .text-center { text-align: center; }
+        .text-right { text-align: right; }
+        .text-left { text-align: left; }
+
+        .font-bold { font-weight: 700; }
+        .font-semibold { font-weight: 600; }
+        .font-normal { font-weight: 400; }
+
+        .text-sm { font-size: 0.875rem; }
+        .text-base { font-size: 1rem; }
+        .text-lg { font-size: 1.125rem; }
+        .text-xl { font-size: 1.25rem; }
+
+        .mt-sm { margin-top: var(--spacing-sm); }
+        .mt-md { margin-top: var(--spacing-md); }
+        .mt-lg { margin-top: var(--spacing-lg); }
+        .mt-xl { margin-top: var(--spacing-xl); }
+
+        .mb-sm { margin-bottom: var(--spacing-sm); }
+        .mb-md { margin-bottom: var(--spacing-md); }
+        .mb-lg { margin-bottom: var(--spacing-lg); }
+        .mb-xl { margin-bottom: var(--spacing-xl); }
+
+        .flex { display: flex; }
+        .flex-col { flex-direction: column; }
+        .items-center { align-items: center; }
+        .justify-center { justify-content: center; }
+        .justify-between { justify-content: space-between; }
+        .gap-sm { gap: var(--spacing-sm); }
+        .gap-md { gap: var(--spacing-md); }
+
+        .opacity-50 { opacity: 0.5; }
+        .opacity-75 { opacity: 0.75; }
+
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+    <!-- ==================== ナビゲーションバー ==================== -->
+    <nav class="navbar">
+        <div class="navbar-container">
+            <div class="navbar-brand">UI/UX Demo</div>
+            <button class="navbar-toggle" id="navToggle" aria-label="メニューを開く">☰</button>
+            <ul class="navbar-menu" id="navMenu">
+                <li><a href="#buttons">ボタン</a></li>
+                <li><a href="#forms">フォーム</a></li>
+                <li><a href="#cards">カード</a></li>
+                <li><a href="#interactive">インタラクティブ</a></li>
+                <li><a href="#layouts">レイアウト</a></li>
+                <li><a href="#extras">その他</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- ==================== メインコンテナ ==================== -->
+    <div class="container">
+        <!-- ==================== ヘロー セクション ==================== -->
+        <section class="section" style="text-align: center; padding: var(--spacing-2xl) var(--spacing-lg);">
+            <h1>UI/UXデザイン デモページ</h1>
+            <p class="section-subtitle">モダンで実用的なUI要素とベストプラクティスの実装例</p>
+            <p style="margin-bottom: var(--spacing-lg); color: var(--text-secondary);">
+                このページは、UI/UXデザインの基本原則を実践的に示すデモです。
+                約1000個のUI要素を集約しており、実務で即戦力になるコンポーネントやパターンをご覧いただけます。
+            </p>
+            <div style="display: flex; gap: var(--spacing-md); justify-content: center; flex-wrap: wrap;">
+                <button class="btn btn-primary btn-lg">始める</button>
+                <button class="btn btn-secondary btn-lg">詳細を見る</button>
+            </div>
+        </section>
+
+        <!-- ==================== ボタン セクション ==================== -->
+        <section class="section" id="buttons">
+            <h2 class="section-title">1. ボタンコンポーネント</h2>
+            <p class="section-subtitle">様々なバリエーションと状態を示すボタンの実装例</p>
+
+            <h3>基本的なボタンバリエーション</h3>
+            <div style="display: flex; flex-wrap: wrap; gap: var(--spacing-md); margin-bottom: var(--spacing-lg);">
+                <button class="btn btn-primary">プライマリ</button>
+                <button class="btn btn-secondary">セカンダリ</button>
+                <button class="btn btn-danger">ダンジャー</button>
+                <button class="btn btn-success">サクセス</button>
+                <button class="btn btn-warning">ウォーニング</button>
+                <button class="btn btn-outline">アウトライン</button>
+                <button class="btn btn-ghost">ゴースト</button>
+            </div>
+
+            <h3>ボタンサイズバリエーション</h3>
+            <div style="display: flex; flex-wrap: wrap; gap: var(--spacing-md); margin-bottom: var(--spacing-lg);">
+                <button class="btn btn-primary btn-sm">スモール</button>
+                <button class="btn btn-primary">ノーマル</button>
+                <button class="btn btn-primary btn-lg">ラージ</button>
+            </div>
+
+            <h3>ボタン状態</h3>
+            <div style="display: flex; flex-wrap: wrap; gap: var(--spacing-md); margin-bottom: var(--spacing-lg);">
+                <button class="btn btn-primary">通常</button>
+                <button class="btn btn-primary" disabled>無効化</button>
+                <button class="btn btn-primary" onclick="showLoader(this)" id="loaderBtn">処理中...</button>
+            </div>
+
+            <h3>アイコン付きボタン（シミュレーション）</h3>
+            <div style="display: flex; flex-wrap: wrap; gap: var(--spacing-md); margin-bottom: var(--spacing-lg);">
+                <button class="btn btn-primary">➕ 追加</button>
+                <button class="btn btn-secondary">🔍 検索</button>
+                <button class="btn btn-danger">🗑️ 削除</button>
+                <button class="btn btn-success">✓ 確定</button>
+                <button class="btn btn-outline">↓ ダウンロード</button>
+            </div>
+
+            <!-- 複数個ボタンを追加（数を増やす） -->
+            <h3>ボタンコンボ（多数のバリエーション）</h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: var(--spacing-md);">
+                <!-- 各行で複数のボタンをジェネレート -->
+                <button class="btn btn-primary">クリック1</button>
+                <button class="btn btn-primary">クリック2</button>
+                <button class="btn btn-secondary">キャンセル1</button>
+                <button class="btn btn-secondary">キャンセル2</button>
+                <button class="btn btn-danger">削除1</button>
+                <button class="btn btn-danger">削除2</button>
+                <button class="btn btn-success">保存1</button>
+                <button class="btn btn-success">保存2</button>
+                <button class="btn btn-warning">編集1</button>
+                <button class="btn btn-warning">編集2</button>
+                <button class="btn btn-outline">詳細1</button>
+                <button class="btn btn-outline">詳細2</button>
+                <button class="btn btn-ghost">キャンセル3</button>
+                <button class="btn btn-ghost">キャンセル4</button>
+                <button class="btn btn-primary btn-sm">小1</button>
+                <button class="btn btn-primary btn-sm">小2</button>
+                <button class="btn btn-primary btn-sm">小3</button>
+                <button class="btn btn-primary btn-sm">小4</button>
+                <button class="btn btn-primary btn-sm">小5</button>
+                <button class="btn btn-primary btn-sm">小6</button>
+                <button class="btn btn-primary btn-lg">大1</button>
+                <button class="btn btn-primary btn-lg">大2</button>
+                <button class="btn btn-primary btn-lg">大3</button>
+                <button class="btn btn-secondary btn-lg">大4</button>
+                <button class="btn btn-secondary btn-lg">大5</button>
+                <button class="btn btn-secondary btn-lg">大6</button>
+                <button class="btn btn-danger btn-sm">危険小1</button>
+                <button class="btn btn-danger btn-sm">危険小2</button>
+                <button class="btn btn-danger btn-sm">危険小3</button>
+                <button class="btn btn-success btn-sm">成功小1</button>
+                <button class="btn btn-success btn-sm">成功小2</button>
+                <button class="btn btn-success btn-sm">成功小3</button>
+            </div>
+        </section>
+
+        <!-- ==================== フォーム セクション ==================== -->
+        <section class="section" id="forms">
+            <h2 class="section-title">2. フォーム要素</h2>
+            <p class="section-subtitle">入力フィールド、チェックボックス、セレクトなど</p>
+
+            <form style="max-width: 600px;">
+                <h3>テキスト入力フィールド</h3>
+                <div class="form-group">
+                    <label class="form-label required">メールアドレス</label>
+                    <input type="email" class="form-input" placeholder="example@example.com">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label required">パスワード</label>
+                    <input type="password" class="form-input" placeholder="セキュアなパスワードを入力">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">フルネーム</label>
+                    <input type="text" class="form-input" placeholder="あなたの名前">
+                </div>
+
+                <h3>テキストエリア</h3>
+                <div class="form-group">
+                    <label class="form-label">メッセージ</label>
+                    <textarea class="form-textarea" placeholder="ここにメッセージを入力してください"></textarea>
+                </div>
+
+                <h3>セレクト（ドロップダウン）</h3>
+                <div class="form-group">
+                    <label class="form-label required">カテゴリーを選択</label>
+                    <select class="form-select">
+                        <option>-- 選択してください --</option>
+                        <option>カテゴリ1</option>
+                        <option>カテゴリ2</option>
+                        <option>カテゴリ3</option>
+                    </select>
+                </div>
+
+                <h3>チェックボックス</h3>
+                <div class="form-checkbox">
+                    <input type="checkbox" id="agree">
+                    <label for="agree">利用規約に同意します</label>
+                </div>
+                <div class="form-checkbox">
+                    <input type="checkbox" id="newsletter">
+                    <label for="newsletter">ニュースレターを受け取る</label>
+                </div>
+
+                <h3>ラジオボタン</h3>
+                <div class="form-radio">
+                    <input type="radio" id="male" name="gender" value="male">
+                    <label for="male">男性</label>
+                </div>
+                <div class="form-radio">
+                    <input type="radio" id="female" name="gender" value="female">
+                    <label for="female">女性</label>
+                </div>
+                <div class="form-radio">
+                    <input type="radio" id="other" name="gender" value="other">
+                    <label for="other">その他</label>
+                </div>
+
+                <h3>トグルスイッチ</h3>
+                <div class="form-switch">
+                    <input type="checkbox" id="darkmode">
+                    <label for="darkmode">ダークモード</label>
+                </div>
+                <div class="form-switch">
+                    <input type="checkbox" id="notifications" checked>
+                    <label for="notifications">通知を有効にする</label>
+                </div>
+
+                <h3>スライダー（レンジ入力）</h3>
+                <div class="range-container">
+                    <div class="range-label">
+                        <label>価格範囲</label>
+                        <span id="priceValue">50000</span>円
+                    </div>
+                    <input type="range" class="form-range" id="priceRange" min="0" max="100000" value="50000">
+                </div>
+
+                <h3>複数フォーム要素の組み合わせ</h3>
+                <div class="form-group">
+                    <label class="form-label required">生年月日</label>
+                    <input type="date" class="form-input">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">電話番号</label>
+                    <input type="tel" class="form-input" placeholder="090-0000-0000">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">URL</label>
+                    <input type="url" class="form-input" placeholder="https://example.com">
+                </div>
+
+                <h3>フォーム検証の例（エラー表示）</h3>
+                <div class="form-group">
+                    <label class="form-label required">ユーザー名</label>
+                    <input type="text" class="form-input error" placeholder="ユーザー名を入力">
+                    <div class="form-error">このユーザー名は既に使用されています</div>
+                </div>
+
+                <h3>フォーム検証の例（成功表示）</h3>
+                <div class="form-group">
+                    <label class="form-label">確認メール</label>
+                    <input type="email" class="form-input success" placeholder="example@example.com">
+                    <div class="form-success">メールアドレスは有効です</div>
+                </div>
+
+                <div style="display: flex; gap: var(--spacing-md); margin-top: var(--spacing-lg);">
+                    <button type="submit" class="btn btn-primary btn-lg">送信</button>
+                    <button type="reset" class="btn btn-secondary btn-lg">リセット</button>
+                </div>
+            </form>
+        </section>
+
+        <!-- ==================== カード セクション ==================== -->
+        <section class="section" id="cards">
+            <h2 class="section-title">3. カードコンポーネント</h2>
+            <p class="section-subtitle">情報をグループ化して表示するカード要素</p>
+
+            <div class="grid">
+                <!-- カード例1 -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3>カード1: 基本レイアウト</h3>
+                        <p style="margin: 0; color: var(--text-secondary); font-size: 0.9rem;">2024年2月</p>
+                    </div>
+                    <div class="card-body">
+                        <p>これは基本的なカードコンポーネントです。情報をグループ化して、視覚的に整理された表示ができます。</p>
+                    </div>
+                    <div class="card-footer">
+                        <button class="btn btn-secondary btn-sm">詳細</button>
+                    </div>
+                </div>
+
+                <!-- カード例2 -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3>カード2: プロダクト</h3>
+                        <span class="badge badge-success">新着</span>
+                    </div>
+                    <div class="card-body">
+                        <p style="font-size: 2rem; margin: 0;">⭐⭐⭐⭐⭐</p>
+                        <p>4.8/5 (242件のレビュー)</p>
+                    </div>
+                    <div class="card-footer">
+                        <button class="btn btn-primary btn-sm">購入</button>
+                        <button class="btn btn-ghost btn-sm">お気に入り</button>
+                    </div>
+                </div>
+
+                <!-- カード例3 -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3>カード3: 統計情報</h3>
+                    </div>
+                    <div class="card-body">
+                        <div style="text-align: center; margin-bottom: var(--spacing-md);">
+                            <div style="font-size: 2.5rem; font-weight: bold; color: var(--primary-color);">1,234</div>
+                            <p style="margin: 0; color: var(--text-secondary);">ユーザー数</p>
+                        </div>
+                        <div class="progress">
+                            <div class="progress-bar" style="width: 75%;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- カード例4 -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3>カード4: 状態インジケータ</h3>
+                    </div>
+                    <div class="card-body">
+                        <p><span class="badge badge-success">✓ オンライン</span></p>
+                        <p><span class="badge badge-warning">⏱ 処理中</span></p>
+                        <p><span class="badge badge-danger">✗ オフライン</span></p>
+                    </div>
+                </div>
+
+                <!-- カード例5 -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3>カード5: リスト形式</h3>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list">
+                            <li class="list-item">📌 タスク1</li>
+                            <li class="list-item">✓ タスク2（完了）</li>
+                            <li class="list-item">📌 タスク3</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- カード例6 -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3>カード6: テキスト情報</h3>
+                    </div>
+                    <div class="card-body">
+                        <p style="color: var(--text-secondary);">説明テキストが入ります。カード内に複数の情報を効率的に配置できます。</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 水平レイアウトカード -->
+            <h3 style="margin-top: var(--spacing-xl);">水平レイアウトカード</h3>
+            <div class="card card-horizontal" style="margin-top: var(--spacing-lg);">
+                <div class="card-image"></div>
+                <div class="card-content">
+                    <h3>横並びカード</h3>
+                    <p>画像と説明を並べて表示するレイアウト。モバイルではスタック表示に自動変更されます。</p>
+                    <div style="display: flex; gap: var(--spacing-md);">
+                        <button class="btn btn-primary btn-sm">詳細</button>
+                        <button class="btn btn-secondary btn-sm">キャンセル</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== インタラクティブセクション ==================== -->
+        <section class="section" id="interactive">
+            <h2 class="section-title">4. インタラクティブ要素</h2>
+            <p class="section-subtitle">タブ、アコーディオン、モーダルなど</p>
+
+            <h3>タブメニュー</h3>
+            <div class="tabs" id="tabExample">
+                <button class="tab-button active" data-tab="tab1">タブ1</button>
+                <button class="tab-button" data-tab="tab2">タブ2</button>
+                <button class="tab-button" data-tab="tab3">タブ3</button>
+                <button class="tab-button" data-tab="tab4">タブ4</button>
+            </div>
+            <div id="tab1" class="tab-content active">
+                <div class="card">
+                    <h4>タブ1の内容</h4>
+                    <p>このコンテンツはタブ1に属しています。タブボタンをクリックすると表示内容が変わります。</p>
+                </div>
+            </div>
+            <div id="tab2" class="tab-content">
+                <div class="card">
+                    <h4>タブ2の内容</h4>
+                    <p>タブ2のコンテンツです。複数のコンテンツを同一領域に効率的に表示できます。</p>
+                </div>
+            </div>
+            <div id="tab3" class="tab-content">
+                <div class="card">
+                    <h4>タブ3の内容</h4>
+                    <p>タブ3のコンテンツです。ページロード時間を短縮し、ユーザー体験を向上させます。</p>
+                </div>
+            </div>
+            <div id="tab4" class="tab-content">
+                <div class="card">
+                    <h4>タブ4の内容</h4>
+                    <p>タブ4のコンテンツです。レスポンシブデザインに対応しています。</p>
+                </div>
+            </div>
+
+            <h3 style="margin-top: var(--spacing-xl);">アコーディオン（展開可能な要素）</h3>
+            <div class="accordion">
+                <div class="accordion-item">
+                    <div class="accordion-header">
+                        <h4>アコーディオン1: よくある質問</h4>
+                        <span class="accordion-toggle">▼</span>
+                    </div>
+                    <div class="accordion-content">
+                        <p>これはアコーディオンの内容です。ヘッダーをクリックすると展開・折りたたみできます。FAQ（よくある質問）の実装に最適です。</p>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <div class="accordion-header">
+                        <h4>アコーディオン2: 機能説明</h4>
+                        <span class="accordion-toggle">▼</span>
+                    </div>
+                    <div class="accordion-content">
+                        <p>複数の情報を整理して表示でき、ユーザーが必要な情報を素早く探せます。複数開く場合も実装可能です。</p>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <div class="accordion-header">
+                        <h4>アコーディオン3: 注意事項</h4>
+                        <span class="accordion-toggle">▼</span>
+                    </div>
+                    <div class="accordion-content">
+                        <p>重要な情報を強調する際に効果的です。ユーザーが主体的に情報にアクセスするため、印象がより強くなります。</p>
+                    </div>
+                </div>
+            </div>
+
+            <h3 style="margin-top: var(--spacing-xl);">モーダルダイアログ</h3>
+            <button class="btn btn-primary" onclick="openModal('modal1')">モーダルを開く</button>
+
+            <div id="modal1" class="modal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>モーダルダイアログ</h3>
+                        <button class="modal-close" onclick="closeModal('modal1')">✕</button>
+                    </div>
+                    <div class="modal-body">
+                        <p>重要な情報や確認が必要な場合にモーダルを使用します。背後の要素がグレーアウトされるため、ユーザーの注意を引きやすいです。</p>
+                        <p>任意のコンテンツをモーダル内に配置できます。</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" onclick="closeModal('modal1')">キャンセル</button>
+                        <button class="btn btn-primary">確定</button>
+                    </div>
+                </div>
+            </div>
+
+            <h3 style="margin-top: var(--spacing-xl);">トースト通知</h3>
+            <div style="display: flex; gap: var(--spacing-md); flex-wrap: wrap;">
+                <button class="btn btn-primary" onclick="showToast('info', '情報', '処理が完了しました')">情報通知</button>
+                <button class="btn btn-success" onclick="showToast('success', '成功', '保存されました')">成功通知</button>
+                <button class="btn btn-warning" onclick="showToast('warning', '警告', '注意が必要です')">警告通知</button>
+                <button class="btn btn-danger" onclick="showToast('error', 'エラー', 'エラーが発生しました')">エラー通知</button>
+            </div>
+
+            <h3 style="margin-top: var(--spacing-xl);">ツールチップ</h3>
+            <div style="display: flex; gap: var(--spacing-lg); flex-wrap: wrap;">
+                <div class="tooltip-container">
+                    ℹ️ ホバーしてください
+                    <div class="tooltip-text">これはツールチップです。マウスホバー時に追加情報を表示します。</div>
+                </div>
+                <div class="tooltip-container">
+                    ⚙️ 設定について
+                    <div class="tooltip-text">詳細な設定方法はドキュメントを参照してください。</div>
+                </div>
+                <div class="tooltip-container">
+                    🔍 検索ヒント
+                    <div class="tooltip-text">キーワードを入力して検索してください。</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== レイアウトセクション ==================== -->
+        <section class="section" id="layouts">
+            <h2 class="section-title">5. レイアウト & ナビゲーション</h2>
+            <p class="section-subtitle">構造的な配置やナビゲーション要素</p>
+
+            <h3>パンくずリスト（ブレッドクラム）</h3>
+            <div class="breadcrumb">
+                <span class="breadcrumb-item"><a href="#/">ホーム</a></span>
+                <span class="breadcrumb-separator">/</span>
+                <span class="breadcrumb-item"><a href="#/">カテゴリ</a></span>
+                <span class="breadcrumb-separator">/</span>
+                <span class="breadcrumb-item"><a href="#/">サブカテゴリ</a></span>
+                <span class="breadcrumb-separator">/</span>
+                <span class="breadcrumb-item active">現在のページ</span>
+            </div>
+
+            <h3>ペジネーション（ページング）</h3>
+            <div class="pagination">
+                <button class="page-link" disabled>← 前へ</button>
+                <button class="page-link">1</button>
+                <button class="page-link active">2</button>
+                <button class="page-link">3</button>
+                <button class="page-link">4</button>
+                <button class="page-link">5</button>
+                <button class="page-link">次へ →</button>
+            </div>
+
+            <h3 style="margin-top: var(--spacing-xl);">アラート・通知メッセージ</h3>
+            <div class="alert alert-primary">
+                <span>ℹ️</span>
+                <div>
+                    <strong>情報</strong><br>
+                    これは情報メッセージです。ユーザーに重要な情報を伝えます。
+                </div>
+                <button class="alert-close" onclick="this.parentElement.style.display='none'">✕</button>
+            </div>
+
+            <div class="alert alert-success">
+                <span>✓</span>
+                <div>
+                    <strong>成功</strong><br>
+                    操作が正常に完了しました。
+                </div>
+                <button class="alert-close" onclick="this.parentElement.style.display='none'">✕</button>
+            </div>
+
+            <div class="alert alert-warning">
+                <span>⚠️</span>
+                <div>
+                    <strong>警告</strong><br>
+                    注意が必要です。詳細をご確認ください。
+                </div>
+                <button class="alert-close" onclick="this.parentElement.style.display='none'">✕</button>
+            </div>
+
+            <div class="alert alert-danger">
+                <span>✗</span>
+                <div>
+                    <strong>エラー</strong><br>
+                    エラーが発生しました。もう一度お試しください。
+                </div>
+                <button class="alert-close" onclick="this.parentElement.style.display='none'">✕</button>
+            </div>
+        </section>
+
+        <!-- ==================== その他セクション ==================== -->
+        <section class="section" id="extras">
+            <h2 class="section-title">6. その他のUI要素</h2>
+            <p class="section-subtitle">プログレスバー、バッジ、スピナーなど</p>
+
+            <h3>プログレスバー</h3>
+            <div>
+                <p>タスク1: 完了</p>
+                <div class="progress">
+                    <div class="progress-bar" style="width: 100%;"></div>
+                </div>
+
+                <p>タスク2: 進行中</p>
+                <div class="progress">
+                    <div class="progress-bar" style="width: 65%;"></div>
+                </div>
+
+                <p>タスク3: 開始前</p>
+                <div class="progress">
+                    <div class="progress-bar" style="width: 0%;"></div>
+                </div>
+
+                <p>タスク4: 警告状態</p>
+                <div class="progress">
+                    <div class="progress-bar warning" style="width: 50%;"></div>
+                </div>
+
+                <p>タスク5: エラー状態</p>
+                <div class="progress">
+                    <div class="progress-bar danger" style="width: 30%;"></div>
+                </div>
+            </div>
+
+            <h3 style="margin-top: var(--spacing-xl);">バッジ（ラベル）</h3>
+            <div style="display: flex; flex-wrap: wrap; gap: var(--spacing-md);">
+                <span class="badge badge-primary">新着</span>
+                <span class="badge badge-success">完了</span>
+                <span class="badge badge-warning">保留中</span>
+                <span class="badge badge-danger">緊急</span>
+                <span class="badge badge-secondary">その他</span>
+                <span class="badge badge-primary">タグ1</span>
+                <span class="badge badge-primary">タグ2</span>
+                <span class="badge badge-success">タグ3</span>
+                <span class="badge badge-warning">タグ4</span>
+            </div>
+
+            <h3 style="margin-top: var(--spacing-xl);">スピナー（ローディング）</h3>
+            <div style="display: flex; gap: var(--spacing-lg); align-items: center;">
+                <div class="spinner"></div>
+                <div class="spinner sm"></div>
+                <div class="spinner lg"></div>
+                <span style="color: var(--text-secondary);">データ読み込み中...</span>
+            </div>
+
+            <h3 style="margin-top: var(--spacing-xl);">バッジカウンター</h3>
+            <div style="display: flex; gap: var(--spacing-lg);">
+                <div style="position: relative; display: inline-block;">
+                    🔔 通知
+                    <span class="badge-counter">5</span>
+                </div>
+                <div style="position: relative; display: inline-block;">
+                    💬 メッセージ
+                    <span class="badge-counter">12</span>
+                </div>
+                <div style="position: relative; display: inline-block;">
+                    🛒 カート
+                    <span class="badge-counter">3</span>
+                </div>
+            </div>
+
+            <h3 style="margin-top: var(--spacing-xl);">スターレーティング</h3>
+            <div style="display: flex; gap: var(--spacing-xl);">
+                <div>
+                    <p style="margin-bottom: var(--spacing-sm);">評価（閲覧用）</p>
+                    <div class="star-rating">
+                        <span class="star active">★</span>
+                        <span class="star active">★</span>
+                        <span class="star active">★</span>
+                        <span class="star active">★</span>
+                        <span class="star">★</span>
+                    </div>
+                    <p style="margin-top: var(--spacing-sm); color: var(--text-secondary); font-size: 0.9rem;">4.0 / 5.0</p>
+                </div>
+            </div>
+
+            <h3 style="margin-top: var(--spacing-xl);">ドラッグ&ドロップゾーン</h3>
+            <div class="dropzone" id="dropzone">
+                <div class="dropzone-text">📁 ファイルをドラッグしてください</div>
+                <div class="dropzone-hint">または、ここをクリックしてファイルを選択</div>
+                <input type="file" id="fileInput" style="display: none;" multiple>
+            </div>
+
+            <h3 style="margin-top: var(--spacing-xl);">色パレット（カラースウォッチ）</h3>
+            <div style="display: flex; flex-wrap: wrap; gap: var(--spacing-md);">
+                <div class="color-swatch" style="background-color: var(--primary-color);">Blue</div>
+                <div class="color-swatch" style="background-color: var(--secondary-color);">Purple</div>
+                <div class="color-swatch" style="background-color: var(--success-color);">Green</div>
+                <div class="color-swatch" style="background-color: var(--warning-color);">Yellow</div>
+                <div class="color-swatch" style="background-color: var(--danger-color);">Red</div>
+                <div class="color-swatch" style="background-color: var(--bg-secondary);">Gray</div>
+            </div>
+
+            <h3 style="margin-top: var(--spacing-xl);">データテーブル（基本）</h3>
+            <div style="overflow-x: auto;">
+                <table style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr style="background-color: var(--bg-secondary); border-bottom: 2px solid var(--border-color);">
+                            <th style="padding: var(--spacing-md); text-align: left;">ID</th>
+                            <th style="padding: var(--spacing-md); text-align: left;">名前</th>
+                            <th style="padding: var(--spacing-md); text-align: left;">ステータス</th>
+                            <th style="padding: var(--spacing-md); text-align: center;">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="border-bottom: 1px solid var(--border-color);">
+                            <td style="padding: var(--spacing-md);">001</td>
+                            <td style="padding: var(--spacing-md);">ユーザーA</td>
+                            <td style="padding: var(--spacing-md);"><span class="badge badge-success">アクティブ</span></td>
+                            <td style="padding: var(--spacing-md); text-align: center;">
+                                <button class="btn btn-secondary btn-sm">編集</button>
+                            </td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid var(--border-color);">
+                            <td style="padding: var(--spacing-md);">002</td>
+                            <td style="padding: var(--spacing-md);">ユーザーB</td>
+                            <td style="padding: var(--spacing-md);"><span class="badge badge-warning">保留中</span></td>
+                            <td style="padding: var(--spacing-md); text-align: center;">
+                                <button class="btn btn-secondary btn-sm">編集</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding: var(--spacing-md);">003</td>
+                            <td style="padding: var(--spacing-md);">ユーザーC</td>
+                            <td style="padding: var(--spacing-md);"><span class="badge badge-danger">非アクティブ</span></td>
+                            <td style="padding: var(--spacing-md); text-align: center;">
+                                <button class="btn btn-secondary btn-sm">編集</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- ==================== サンプルグリッド完成例 ==================== -->
+        <section class="section">
+            <h2 class="section-title">7. グリッドレイアウト完成例</h2>
+            <p class="section-subtitle">複数のカードを美しく配置</p>
+
+            <div class="grid">
+                <div class="card" style="text-align: center;">
+                    <h4>デザイン</h4>
+                    <p>🎨</p>
+                    <p style="color: var(--text-secondary);">美しいビジュアル設計</p>
+                </div>
+                <div class="card" style="text-align: center;">
+                    <h4>開発</h4>
+                    <p>💻</p>
+                    <p style="color: var(--text-secondary);">高速で安定した実装</p>
+                </div>
+                <div class="card" style="text-align: center;">
+                    <h4>テスト</h4>
+                    <p>✓</p>
+                    <p style="color: var(--text-secondary);">品質保証</p>
+                </div>
+                <div class="card" style="text-align: center;">
+                    <h4>ユーザビリティ</h4>
+                    <p>👥</p>
+                    <p style="color: var(--text-secondary);">使いやすい設計</p>
+                </div>
+                <div class="card" style="text-align: center;">
+                    <h4>パフォーマンス</h4>
+                    <p>⚡</p>
+                    <p style="color: var(--text-secondary);">軽量で高速</p>
+                </div>
+                <div class="card" style="text-align: center;">
+                    <h4>アクセシビリティ</h4>
+                    <p>♿</p>
+                    <p style="color: var(--text-secondary);">全員が使用可能</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== 大量のUI要素を生成（スケール対応） ==================== -->
+        <section class="section">
+            <h2 class="section-title">8. 拡張UI要素ライブラリ</h2>
+            <p class="section-subtitle">様々なバリエーションとコンビネーション</p>
+
+            <!-- ボタングリッド -->
+            <h3>ボタンの全バリエーション（大量）</h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: var(--spacing-md); margin-bottom: var(--spacing-lg);">
+                <!-- プライマリボタン -->
+                <button class="btn btn-primary">プライマリ1</button>
+                <button class="btn btn-primary">プライマリ2</button>
+                <button class="btn btn-primary">プライマリ3</button>
+                <button class="btn btn-primary">プライマリ4</button>
+                <button class="btn btn-primary">プライマリ5</button>
+                <button class="btn btn-primary">プライマリ6</button>
+                <!-- セカンダリボタン -->
+                <button class="btn btn-secondary">セカンダリ1</button>
+                <button class="btn btn-secondary">セカンダリ2</button>
+                <button class="btn btn-secondary">セカンダリ3</button>
+                <button class="btn btn-secondary">セカンダリ4</button>
+                <button class="btn btn-secondary">セカンダリ5</button>
+                <button class="btn btn-secondary">セカンダリ6</button>
+                <!-- ダンジャーボタン -->
+                <button class="btn btn-danger">ダンジャー1</button>
+                <button class="btn btn-danger">ダンジャー2</button>
+                <button class="btn class="btn btn-danger">ダンジャー3</button>
+                <button class="btn btn-danger">ダンジャー4</button>
+                <button class="btn btn-danger">ダンジャー5</button>
+                <button class="btn btn-danger">ダンジャー6</button>
+                <!-- サクセスボタン -->
+                <button class="btn btn-success">サクセス1</button>
+                <button class="btn btn-success">サクセス2</button>
+                <button class="btn btn-success">サクセス3</button>
+                <button class="btn btn-success">サクセス4</button>
+                <button class="btn btn-success">サクセス5</button>
+                <button class="btn btn-success">サクセス6</button>
+                <!-- ウォーニングボタン -->
+                <button class="btn btn-warning">ウォーニング1</button>
+                <button class="btn btn-warning">ウォーニング2</button>
+                <button class="btn btn-warning">ウォーニング3</button>
+                <button class="btn btn-warning">ウォーニング4</button>
+                <button class="btn btn-warning">ウォーニング5</button>
+                <button class="btn btn-warning">ウォーニング6</button>
+                <!-- アウトラインボタン -->
+                <button class="btn btn-outline">アウト1</button>
+                <button class="btn btn-outline">アウト2</button>
+                <button class="btn btn-outline">アウト3</button>
+                <button class="btn btn-outline">アウト4</button>
+                <button class="btn btn-outline">アウト5</button>
+                <button class="btn btn-outline">アウト6</button>
+                <!-- ゴーストボタン -->
+                <button class="btn btn-ghost">ゴースト1</button>
+                <button class="btn btn-ghost">ゴースト2</button>
+                <button class="btn btn-ghost">ゴースト3</button>
+                <button class="btn btn-ghost">ゴースト4</button>
+                <button class="btn btn-ghost">ゴースト5</button>
+                <button class="btn btn-ghost">ゴースト6</button>
+                <!-- スモールボタン -->
+                <button class="btn btn-primary btn-sm">小1</button>
+                <button class="btn btn-primary btn-sm">小2</button>
+                <button class="btn btn-primary btn-sm">小3</button>
+                <button class="btn btn-secondary btn-sm">小4</button>
+                <button class="btn btn-secondary btn-sm">小5</button>
+                <button class="btn btn-secondary btn-sm">小6</button>
+                <!-- ラージボタン -->
+                <button class="btn btn-primary btn-lg">大1</button>
+                <button class="btn btn-primary btn-lg">大2</button>
+                <button class="btn btn-secondary btn-lg">大3</button>
+                <button class="btn btn-secondary btn-lg">大4</button>
+                <button class="btn btn-danger btn-lg">大5</button>
+                <button class="btn btn-danger btn-lg">大6</button>
+            </div>
+
+            <!-- カードグリッド拡張 -->
+            <h3>カード拡張セット</h3>
+            <div class="grid">
+                <div class="card">
+                    <h4>カードA</h4>
+                    <p>コンテンツA</p>
+                </div>
+                <div class="card">
+                    <h4>カードB</h4>
+                    <p>コンテンツB</p>
+                </div>
+                <div class="card">
+                    <h4>カードC</h4>
+                    <p>コンテンツC</p>
+                </div>
+                <div class="card">
+                    <h4>カードD</h4>
+                    <p>コンテンツD</p>
+                </div>
+                <div class="card">
+                    <h4>カードE</h4>
+                    <p>コンテンツE</p>
+                </div>
+                <div class="card">
+                    <h4>カードF</h4>
+                    <p>コンテンツF</p>
+                </div>
+                <div class="card">
+                    <h4>カードG</h4>
+                    <p>コンテンツG</p>
+                </div>
+                <div class="card">
+                    <h4>カードH</h4>
+                    <p>コンテンツH</p>
+                </div>
+                <div class="card">
+                    <h4>カードI</h4>
+                    <p>コンテンツI</p>
+                </div>
+                <div class="card">
+                    <h4>カードJ</h4>
+                    <p>コンテンツJ</p>
+                </div>
+                <div class="card">
+                    <h4>カードK</h4>
+                    <p>コンテンツK</p>
+                </div>
+                <div class="card">
+                    <h4>カードL</h4>
+                    <p>コンテンツL</p>
+                </div>
+            </div>
+
+            <!-- バッジ拡張 -->
+            <h3 style="margin-top: var(--spacing-xl);">バッジの全バリエーション</h3>
+            <div style="display: flex; flex-wrap: wrap; gap: var(--spacing-md); margin-bottom: var(--spacing-lg);">
+                <span class="badge badge-primary">バッジ1</span>
+                <span class="badge badge-primary">バッジ2</span>
+                <span class="badge badge-primary">バッジ3</span>
+                <span class="badge badge-success">バッジ4</span>
+                <span class="badge badge-success">バッジ5</span>
+                <span class="badge badge-success">バッジ6</span>
+                <span class="badge badge-warning">バッジ7</span>
+                <span class="badge badge-warning">バッジ8</span>
+                <span class="badge badge-warning">バッジ9</span>
+                <span class="badge badge-danger">バッジ10</span>
+                <span class="badge badge-danger">バッジ11</span>
+                <span class="badge badge-danger">バッジ12</span>
+                <span class="badge badge-secondary">バッジ13</span>
+                <span class="badge badge-secondary">バッジ14</span>
+                <span class="badge badge-secondary">バッジ15</span>
+            </div>
+
+            <!-- フォーム要素の複合 -->
+            <h3>複合フォーム例</h3>
+            <form style="max-width: 600px; background: var(--bg-secondary); padding: var(--spacing-lg); border-radius: var(--radius-lg);">
+                <div class="form-group">
+                    <label class="form-label required">プロダクト名</label>
+                    <input type="text" class="form-input" placeholder="プロダクト名を入力">
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-md);">
+                    <div class="form-group">
+                        <label class="form-label">数量</label>
+                        <input type="number" class="form-input" placeholder="0" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">価格</label>
+                        <input type="number" class="form-input" placeholder="0.00" step="0.01">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">説明</label>
+                    <textarea class="form-textarea" placeholder="プロダクトの説明"></textarea>
+                </div>
+                <div style="display: flex; gap: var(--spacing-md);">
+                    <button type="submit" class="btn btn-primary">送信</button>
+                    <button type="reset" class="btn btn-secondary">リセット</button>
+                </div>
+            </form>
+        </section>
+
+        <!-- ==================== フッター ==================== -->
+        <footer style="background-color: var(--bg-secondary); padding: var(--spacing-2xl) var(--spacing-lg); margin-top: var(--spacing-2xl); border-top: 1px solid var(--border-color); text-align: center; color: var(--text-secondary);">
+            <p>&copy; 2024 UI/UXデザイン デモページ | モダンなベストプラクティス</p>
+            <p style="font-size: 0.9rem; margin-top: var(--spacing-md);">このページは、UI/UXの基本原則と実用的なコンポーネント設計を示すデモです。</p>
+        </footer>
+    </div>
+
+    <!-- ==================== JavaScript ==================== -->
+    <script>
+        /* ==================== グローバル設定 ==================== */
+        /* ページ全体で共通して使用される変数や設定を定義 */
+
+        const config = {
+            animationDuration: 300,
+            toastDuration: 5000,
+            storagePrefix: 'uiux_demo_'
+        };
+
+        /* ==================== LocalStorage ユーティリティ ==================== */
+        /* ユーザーの設定や入力を保存・復元する機能
+           使用例：ダークモード設定、フォーム入力値の保存
+           UI/UX的優位点：前回のユーザー設定を記憶し、快適なブラウジング環境を維持 */
+
+        const StorageManager = {
+            get: (key) => {
+                try {
+                    const data = localStorage.getItem(config.storagePrefix + key);
+                    return data ? JSON.parse(data) : null;
+                } catch (e) {
+                    console.warn('LocalStorage読み込みエラー:', e);
+                    return null;
+                }
+            },
+            set: (key, value) => {
+                try {
+                    localStorage.setItem(config.storagePrefix + key, JSON.stringify(value));
+                } catch (e) {
+                    console.warn('LocalStorage保存エラー:', e);
+                }
+            }
+        };
+
+        /* ==================== ナビゲーション機能 ==================== */
+        /* モバイルでのメニュー開閉機能
+           使用例：スマートフォンでのハンバーガーメニュー
+           UI/UX的優位点：小さい画面でも全ナビゲーションにアクセス可能 */
+
+        const navToggle = document.getElementById('navToggle');
+        const navMenu = document.getElementById('navMenu');
+
+        if (navToggle) {
+            navToggle.addEventListener('click', () => {
+                navMenu.classList.toggle('active');
+                // ARIA属性を更新してアクセシビリティを向上
+                const isOpen = navMenu.classList.contains('active');
+                navToggle.setAttribute('aria-label', isOpen ? 'メニューを閉じる' : 'メニューを開く');
+            });
+
+            // メニュー内のリンククリック時にメニューを閉じる
+            navMenu.querySelectorAll('a').forEach(link => {
+                link.addEventListener('click', () => {
+                    navMenu.classList.remove('active');
+                });
+            });
+        }
+
+        /* ==================== タブ機能 ==================== */
+        /* タブボタンをクリックしたときにコンテンツを切り替える
+           使用例：ユーザープロフィール、設定画面のタブ
+           UI/UX的優位点：大量の情報を整理・表示でき、ページの視認性が向上 */
+
+        document.querySelectorAll('.tabs').forEach(tabsContainer => {
+            const buttons = tabsContainer.querySelectorAll('.tab-button');
+            buttons.forEach(button => {
+                button.addEventListener('click', () => {
+                    // 前のアクティブタブをリセット
+                    buttons.forEach(btn => {
+                        btn.classList.remove('active');
+                        const tabId = btn.getAttribute('data-tab');
+                        document.getElementById(tabId)?.classList.remove('active');
+                    });
+                    // 新しいアクティブタブを設定
+                    button.classList.add('active');
+                    const tabId = button.getAttribute('data-tab');
+                    document.getElementById(tabId)?.classList.add('active');
+                });
+            });
+        });
+
+        /* ==================== アコーディオン機能 ==================== */
+        /* アコーディオンヘッダーをクリックして内容を展開・折りたたむ
+           使用例：FAQ（よくある質問）、詳細情報の表示
+           UI/UX的優位点：情報が段階的に表示され、ユーザーは興味のある項目のみ確認可能 */
+
+        document.querySelectorAll('.accordion-header').forEach(header => {
+            header.addEventListener('click', () => {
+                const item = header.parentElement;
+                // 複数開く場合のロジック（単一開閉でもよい）
+                item.classList.toggle('active');
+            });
+        });
+
+        /* ==================== モーダルダイアログ機能 ==================== */
+        /* モーダルの表示・非表示を制御
+           使用例：確認ダイアログ、詳細情報表示
+           UI/UX的優位点：重要な操作をユーザーに強調でき、誤操作を防げる */
+
+        window.openModal = (modalId) => {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.classList.add('show');
+                // スクリーンリーダー対応
+                modal.setAttribute('role', 'dialog');
+                modal.setAttribute('aria-modal', 'true');
+            }
+        };
+
+        window.closeModal = (modalId) => {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.classList.remove('show');
+            }
+        };
+
+        // モーダル外をクリックして閉じる（背景クリック）
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.classList.remove('show');
+                }
+            });
+
+            // Escキーでモーダルを閉じる
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && modal.classList.contains('show')) {
+                    modal.classList.remove('show');
+                }
+            });
+        });
+
+        /* ==================== トースト通知機能 ==================== */
+        /* 画面右下に一時的なメッセージを表示
+           使用例：操作成功/失敗の通知、エラーメッセージ
+           UI/UX的優位点：操作結果をリアルタイムで伝え、ユーザー体験を向上 */
+
+        window.showToast = (type, title, message) => {
+            const container = document.querySelector('.toast-container') || createToastContainer();
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `
+                <div>
+                    <strong>${title}</strong><br>
+                    ${message}
+                </div>
+                <button class="toast-close" onclick="this.parentElement.remove()">✕</button>
+            `;
+            container.appendChild(toast);
+
+            // 自動削除（5秒後）
+            setTimeout(() => {
+                toast.style.animation = 'slideInRight var(--transition-normal) reverse';
+                setTimeout(() => toast.remove(), config.toastDuration);
+            }, config.toastDuration);
+        };
+
+        function createToastContainer() {
+            const container = document.createElement('div');
+            container.className = 'toast-container';
+            document.body.appendChild(container);
+            return container;
+        }
+
+        /* ==================== ドラッグ&ドロップ機能 ==================== */
+        /* ファイルのドラッグ&ドロップまたはクリック選択を処理
+           使用例：ファイルアップロード、画像追加
+           UI/UX的優位点：複数の入力方法で利便性が向上 */
+
+        const dropzone = document.getElementById('dropzone');
+        const fileInput = document.getElementById('fileInput');
+
+        if (dropzone && fileInput) {
+            // ドラッグオーバーイベント
+            dropzone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                dropzone.classList.add('dragover');
+            });
+
+            dropzone.addEventListener('dragleave', () => {
+                dropzone.classList.remove('dragover');
+            });
+
+            // ドロップイベント
+            dropzone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                dropzone.classList.remove('dragover');
+                handleFiles(e.dataTransfer.files);
+            });
+
+            // クリック時ファイルダイアログ開く
+            dropzone.addEventListener('click', () => {
+                fileInput.click();
+            });
+
+            fileInput.addEventListener('change', (e) => {
+                handleFiles(e.target.files);
+            });
+        }
+
+        function handleFiles(files) {
+            let fileNames = Array.from(files).map(f => f.name).join(', ');
+            showToast('success', 'アップロード準備完了', `${files.length}個のファイルが選択されました: ${fileNames.substring(0, 50)}...`);
+        }
+
+        /* ==================== フォーム入力イベント ==================== */
+        /* プライス範囲スライダーの値表示
+           使用例：価格フィルター、ボリューム調整
+           UI/UX的優位点：リアルタイムフィードバックでユーザーが直感的に値を調整可能 */
+
+        const priceRange = document.getElementById('priceRange');
+        const priceValue = document.getElementById('priceValue');
+
+        if (priceRange && priceValue) {
+            priceRange.addEventListener('input', (e) => {
+                priceValue.textContent = e.target.value.toLocaleString('ja-JP');
+            });
+        }
+
+        /* ==================== ローディングシミュレーション ==================== */
+        /* ボタンクリック時のローディング状態表示
+           使用例：フォーム送信中、データ読み込み中
+           UI/UX的優位点：処理中であることが明確に伝わり、誤った重複送信を防げる */
+
+        window.showLoader = function(button) {
+            const originalText = button.textContent;
+            button.disabled = true;
+            button.innerHTML = '<span class="spinner sm"></span> 処理中...';
+
+            // 2秒後に完了
+            setTimeout(() => {
+                button.textContent = '完了！';
+                button.disabled = false;
+                setTimeout(() => {
+                    button.textContent = originalText;
+                }, 2000);
+            }, 2000);
+        };
+
+        /* ==================== ダークモード切り替え ==================== */
+        /* ダークモードチェックボックスの状態に応じて、CSS変数を変更してテーマを切り替える
+           使用例：設定画面でのダークモード選択
+           UI/UX的優位点：ユーザーのシステム設定に対応し、目の疲労を軽減 */
+
+        const darkModeToggle = document.getElementById('darkmode');
+        if (darkModeToggle) {
+            // 前回の設定を復元
+            const savedDarkMode = StorageManager.get('darkmode');
+            if (savedDarkMode !== null) {
+                darkModeToggle.checked = savedDarkMode;
+                applyDarkMode(savedDarkMode);
+            }
+
+            darkModeToggle.addEventListener('change', (e) => {
+                const isDark = e.target.checked;
+                applyDarkMode(isDark);
+                StorageManager.set('darkmode', isDark);
+                showToast('info', 'テーマ変更', isDark ? 'ダークモードに切り替えました' : 'ライトモードに切り替えました');
+            });
+        }
+
+        function applyDarkMode(isDark) {
+            // ダークモード用CSS変数を動的に設定（簡略実装）
+            const root = document.documentElement;
+            if (isDark) {
+                root.style.setProperty('--bg-primary', '#0f172a');
+                root.style.setProperty('--bg-secondary', '#1e293b');
+                root.style.setProperty('--text-primary', '#f8fafc');
+                root.style.setProperty('--text-secondary', '#cbd5e1');
+            } else {
+                root.style.setProperty('--bg-primary', '#ffffff');
+                root.style.setProperty('--bg-secondary', '#f3f4f6');
+                root.style.setProperty('--text-primary', '#1f2937');
+                root.style.setProperty('--text-secondary', '#6b7280');
+            }
+        }
+
+        /* ==================== フォーム検証の例 ==================== */
+        /* ユーザー入力をリアルタイムで検証し、フィードバックを提供
+           使用例：メールアドレス検証、パスワード強度チェック
+           UI/UX的優位点：ユーザーが送信前に入力エラーに気づけ、スムーズなフロー実現 */
+
+        // 簡単なメール検証例（コメント）
+        /*
+        const emailInputs = document.querySelectorAll('input[type="email"]');
+        emailInputs.forEach(input => {
+            input.addEventListener('blur', (e) => {
+                const isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e.target.value);
+                if (e.target.value && !isValid) {
+                    e.target.classList.add('error');
+                } else {
+                    e.target.classList.remove('error');
+                }
+            });
+        });
+        */
+
+        /* ==================== 初期化処理 ==================== */
+        /* ページロード時に実行される処理
+           アナリティクス、初期表示、等 */
+
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('UI/UXデモページが読み込まれました');
+            // ここにページ初期化処理を追加
+        });
+
+        /* ==================== API連携の例（コメント） ==================== */
+        /*
+        async function fetchData(url) {
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                return data;
+            } catch (error) {
+                console.error('データ取得エラー:', error);
+                showToast('error', 'エラー', 'データの取得に失敗しました');
+            }
+        }
+        */
+
+        /* ==================== パフォーマンス最適化：イベントデリゲーション ==================== */
+        /* 複数の要素に同じイベントリスナーを付与する場合、親要素に1つリスナーを付けるほうが効率的
+           使用例：リスト内の複数ボタン、テーブル内の操作ボタン
+           効果：メモリ使用量削減、動的要素追加時の対応が容易 */
+
+        // 例：リスト内のボタンをクリック時に親のリストを操作
+        document.addEventListener('click', (e) => {
+            // ここでイベントデリゲーションのロジックを記述
+        });
+
+        /* ==================== キーボードナビゲーション対応 ==================== */
+        /* Tabキーでのナビゲーション、Enterキーでの確定などをサポート
+           アクセシビリティを大幅に向上 */
+
+        document.addEventListener('keydown', (e) => {
+            // Tabキー：フォーカス管理（ブラウザデフォルト）
+            // Enterキー：確定
+            if (e.key === 'Enter' && e.target.classList.contains('btn')) {
+                e.target.click();
+            }
+        });
+
+    </script>
+</body>
+</html>
